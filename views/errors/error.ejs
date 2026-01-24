@@ -1,0 +1,23 @@
+<% if (!title) { title="Error" ; } %>
+
+    <div class="content">
+        <% if (title.includes("404")) { %>
+            <div class="error-icon">🔍</div>
+        <% } else { %>
+            <div class="error-icon">⚠️</div>
+        <% } %>
+
+        <h1><%= title %></h1>
+
+        <div class="error-message">
+            <% if (message) { %>
+                <p class="notice"><%= message %></p>
+            <% } else { %>
+                <p class="notice">An unexpected error occurred.</p>
+            <% } %>
+        </div>
+
+        <p>
+            <a href="/" class="btn">Return to Home</a>
+        </p>
+    </div>
