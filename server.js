@@ -12,10 +12,10 @@ const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 require("dotenv").config()
 const app = express()
-
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
+const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities/")   // <-- REQUIRED for nav on errors
 
 /* ***********************
@@ -32,6 +32,12 @@ const utilities = require("./utilities/")   // <-- REQUIRED for nav on errors
   name: 'sessionId',
 }))
 
+// Express Messages Middleware
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
 
 /* ***********************
  * View Engine and Templates
@@ -50,6 +56,9 @@ app.get("/", baseController.buildHome)
 
 // Inventory routes
 app.use("/inv", inventoryRoute)
+
+// Account routes
+app.use("/account", accountRoute)
 
 /* ***********************
  * 404 Handler

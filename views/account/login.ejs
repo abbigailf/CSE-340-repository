@@ -1,0 +1,53 @@
+<% if (messages()) { %>
+    <%- messages() %>
+        <% } %>
+
+            <h1>
+                <%= title %>
+            </h1>
+
+            <form action="/account/login" method="post" class="login-form">
+                <label for="account_email">Email Address:</label>
+                <input type="email" id="account_email" name="account_email" required>
+
+                <label for="account_password">Password:</label>
+                <input type="password" id="account_password" name="account_password" required>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="register-link">
+                Don't have an account?
+                <a href="/account/register">Register here</a>
+            </p>
+
+            <style>
+                .login-form {
+                    max-width: 400px;
+                    margin: 1rem auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .login-form label {
+                    font-weight: bold;
+                }
+
+                .login-form input {
+                    padding: 0.5rem;
+                    font-size: 1rem;
+                }
+
+                .login-form button {
+                    margin-top: 0.5rem;
+                    padding: 0.6rem;
+                    font-size: 1rem;
+                    cursor: pointer;
+                }
+
+                .register-link {
+                    text-align: center;
+                    margin-top: 1rem;
+                }
+            </style>
