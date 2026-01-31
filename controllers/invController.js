@@ -59,4 +59,95 @@ invCont.throwError = async function (req, res, next) {
   throw new Error("Intentional 500 error")
 }
 
+/* ***************************
+ * Build inventory management view
+ * *************************** */
+invCont.buildManagement = async function (req, res, next) {
+  const nav = await utilities.getNav()
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+  })
+}
+
+/* ***************************
+ * Build add classification view
+ * *************************** */
+invCont.buildAddClassification = async function (req, res, next) {
+  const nav = await utilities.getNav()
+  res.render("inventory/add-classification", {
+    title: "Add Classification",
+    nav,
+  })
+}
+
+/* ***************************
+ * Process add classification
+ * *************************** */
+invCont.addClassification = async function (req, res, next) {
+  const { classification_name } = req.body
+
+  const nameRegex = /^[A-Za-z0-9]+$/
+  if (!classification_name || !nameRegex.test(classification_name)) {
+    req.flash("notice", "Classification name cannot contain spaces or special characters.")
+    return res.redirect("/inv/add-classification")
+  }
+
+  const result = await invModel.addClassification(classification_name)
+
+  if (result.rowCount === 1) {
+    req.flash("notice", "Classification added successfully.")
+    res.redirect("/inv/")
+  } else {
+    req.flash("notice", "Classification insert failed.")
+    res.redirect("/inv/add-classification")
+  }
+}
+
+/* ***************************
+ * Build add inventory view
+ * *************************** */
+invCont.buildAddInventory = async function (req, res, next) {
+  const nav = await utilities.getNav()
+  const classificationList = await utilities.buildClassificationList()
+
+  res.render("inventory/add-inventory", {
+    title: "Add Inventory",
+    nav,
+    classificationList,
+    inv_make: "",
+    inv_model: "",
+    inv_year: "",
+    inv_description: "",
+    inv_image: "",
+    inv_thumbnail: "",
+    inv_price: "",
+    inv_miles: "",
+    inv_color: "",
+    errors: null,
+  })
+}
+
+invCont.addInventory = async function (req, res) {
+  const result = await invModel.addInventory(req.body)
+
+  if (result) {
+    req.flash("notice", "Vehicle added successfully.")
+    res.redirect("/inv/")
+  } else {
+    let nav = await utilities.getNav()
+    let classificationList = await utilities.buildClassificationList(
+      req.body.classification_id
+    )
+
+    res.render("./inventory/add-inventory", {
+      title: "Add Inventory",
+      nav,
+      classificationList,
+      errors: [{ msg: "Sorry, the vehicle could not be added." }],
+      ...req.body
+    })
+  }
+}
+
 module.exports = invCont
