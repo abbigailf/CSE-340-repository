@@ -1,53 +1,107 @@
-<% if (messages()) { %>
-    <%- messages() %>
-        <% } %>
+<%- include("../partials/head") %>
+    <%- include("../partials/header") %>
 
-            <h1>
-                <%= title %>
-            </h1>
+<main>
+    <% if (messages()) { %>
+        <%- messages() %>
+    <% } %>
 
-            <form action="/account/login" method="post" class="login-form">
-                <label for="account_email">Email Address:</label>
-                <input type="email" id="account_email" name="account_email" required>
+    <h1>
+        <%= title %>
+    </h1>
 
-                <label for="account_password">Password:</label>
-                <input type="password" id="account_password" name="account_password" required>
+    <form id="loginForm" action="/account/login" method="post" class="login-form">
+        <label for="account_email">Email Address:</label>
+        <input type="email" id="account_email" name="account_email" required
+            placeholder="Enter your email">
 
-                <button type="submit">Login</button>
-            </form>
+        <label for="account_password">Password:</label>
+        <div class="password-requirements">
+            Password must be at least 12 characters, contain at least 1 uppercase letter, 1 number,
+            and 1 special character
+        </div>
+        <input type="password" id="account_password" name="account_password" required
+            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
 
-            <p class="register-link">
-                Don't have an account?
-                <a href="/account/register">Register here</a>
-            </p>
+        <button type="submit">Login</button>
+    </form>
 
-            <style>
-                .login-form {
-                    max-width: 400px;
-                    margin: 1rem auto;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                }
+    <p class="register-link">
+        Don't have an account?
+        <a href="/account/register">Register here</a>
+    </p>
+</main>
 
-                .login-form label {
-                    font-weight: bold;
-                }
+<style>
+/* Container - matches Register form width */
+.login-form {
+    max-width: 400px;
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
 
-                .login-form input {
-                    padding: 0.5rem;
-                    font-size: 1rem;
-                }
+.login-form label {
+    font-weight: bold;
+}
 
-                .login-form button {
-                    margin-top: 0.5rem;
-                    padding: 0.6rem;
-                    font-size: 1rem;
-                    cursor: pointer;
-                }
+.login-form input {
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
-                .register-link {
-                    text-align: center;
-                    margin-top: 1rem;
-                }
-            </style>
+/* Password instruction text */
+.password-requirements {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.4;
+    margin-bottom: 0.2rem;
+}
+
+/* Primary Button - Matches "Register" button */
+.login-form button[type="submit"] {
+    margin-top: 1rem;
+    padding: 0.7rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.login-form button[type="submit"]:hover {
+    background-color: #004494;
+}
+
+.login-form button[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+/* Secondary Action - Register Link styled as a subtle button */
+.register-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.register-link a {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    background-color: #f4f4f4;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.register-link a:hover {
+    background-color: #e8e8e8;
+}
+</style>
