@@ -14,3 +14,18 @@
         </a>
     </li>
 </ul>
+
+<h2>Manage Inventory</h2>
+<p>Select a classification from the list below to see the items belonging to that classification.</p>
+
+<!-- Display the classification select list -->
+<%- classificationSelect %>
+
+<!-- Empty table for inventory data -->
+<table id="inventoryDisplay"></table>
+
+<!-- Fallback message for no JavaScript -->
+<noscript>JavaScript must be enabled to use this page.</noscript>
+
+<!-- Include JavaScript file to handle dynamic inventory -->
+<script src="/js/inventory.js" defer></script>

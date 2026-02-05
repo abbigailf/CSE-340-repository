@@ -57,11 +57,11 @@ inventoryValidation.inventoryRules = () => {
 }
 
 /* ***************************
- * Check validation results
+ * Check validation results for Add Inventory
  * ************************** */
 inventoryValidation.checkInventoryData = async (req, res, next) => {
-  const { errors } = validationResult(req)
-  if (errors.length > 0) {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     let classificationList = await utilities.buildClassificationList(
       req.body.classification_id
@@ -71,10 +71,43 @@ inventoryValidation.checkInventoryData = async (req, res, next) => {
       title: "Add Inventory",
       nav,
       classificationList,
-      errors,
+      errors: errors.array(),
       ...req.body
     })
     return
+  }
+  next()
+}
+
+/* ***************************
+ * Check validation results for Update Inventory
+ * Redirects back to edit view if errors exist
+ * ************************** */
+inventoryValidation.checkUpdateData = async (req, res, next) => {
+  const { inv_id, classification_id, inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color } = req.body
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    let classificationList = await utilities.buildClassificationList(classification_id)
+    const title = `Edit ${inv_make} ${inv_model}`
+
+    return res.render("./inventory/edit-inventory", {
+      title,
+      nav,
+      classificationSelect: classificationList,
+      errors: errors.array(),
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    })
   }
   next()
 }
