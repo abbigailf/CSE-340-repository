@@ -274,5 +274,46 @@ invCont.updateInventory = async function (req, res, next) {
   }
 }
 
+/* ***************************
+ *  Build delete confirmation view
+ * ************************** */
+invCont.buildDeleteConfirm = async function (req, res, next) {
+  const inv_id = parseInt(req.params.invId)
+  const nav = await utilities.getNav()
+
+  // Get inventory item data
+  const itemData = await invModel.getVehicleById(inv_id)
+
+  // Build vehicle name
+  const itemName = `${itemData.inv_make} ${itemData.inv_model}`
+
+  res.render("inventory/delete-confirm", {
+    title: "Delete " + itemName,
+    nav,
+    errors: null,
+    inv_id: itemData.inv_id,
+    inv_make: itemData.inv_make,
+    inv_model: itemData.inv_model,
+    inv_year: itemData.inv_year,
+    inv_price: itemData.inv_price,
+  })
+}
+
+/* ***************************
+ *  Delete Inventory Item
+ * ************************** */
+invCont.deleteInventory = async function (req, res, next) {
+  const inv_id = parseInt(req.body.inv_id)
+
+  const deleteResult = await invModel.deleteInventory(inv_id)
+
+  if (deleteResult) {
+    req.flash("notice", "Vehicle successfully deleted.")
+    res.redirect("/inv/")
+  } else {
+    req.flash("notice", "Delete failed. Please try again.")
+    res.redirect(`/inv/delete/${inv_id}`)
+  }
+}
 
 module.exports = invCont
