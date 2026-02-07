@@ -41,5 +41,38 @@ router.get(
   utilities.handleErrors(accountController.buildAccountManagement)
 )
 
+// Build update form
+router.get(
+  "/update/:accountId",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildUpdateAccount)
+)
+
+// Process update
+router.post(
+  "/update",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  regValidate.updateAccountRules(),
+  regValidate.checkUpdateData,
+  utilities.handleErrors(accountController.updateAccount)
+)
+
+router.post(
+    "/update-password",
+    utilities.checkJWTToken,
+    utilities.checkLogin,
+    regValidate.updatePasswordRules(),
+    regValidate.checkPasswordData,
+    utilities.handleErrors(accountController.updatePassword)
+)
+
+router.get("/logout", (req, res) => {
+  res.clearCookie("jwt")
+  req.flash("notice", "You have successfully logged out.")
+  res.redirect("/")
+})
+
 // Export router
 module.exports = router

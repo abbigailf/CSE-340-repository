@@ -116,4 +116,89 @@ validate.checkLoginData = async (req, res, next) => {
   next()
 }
 
+/* **********************************
+ * Update account information rules
+ ********************************** */
+validate.updateAccountRules = () => {
+  return [
+    body("account_firstname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage("First name is required."),
+
+    body("account_lastname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage("Last name is required."),
+
+    body("account_email")
+      .trim()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("A valid email is required."),
+  ]
+}
+
+/* **********************************
+ * Check update account info data
+ ********************************** */
+validate.checkUpdateData = async (req, res, next) => {
+  const { account_firstname, account_lastname, account_email, account_id } = req.body
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    const nav = await utilities.getNav()
+    return res.render("account/update-account", {
+      errors,
+      title: "Update Account",
+      nav,
+      accountData: { account_id, account_firstname, account_lastname, account_email },
+    })
+  }
+  next()
+}
+
+/* **********************************
+ * Update password rules
+ ********************************** */
+validate.updatePasswordRules = () => {
+  return [
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required.")
+      .isStrongPassword({
+        minLength: 12,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "Password must be at least 12 characters and contain at least 1 number, 1 capital letter, and 1 special character."
+      ),
+  ]
+}
+
+/* **********************************
+ * Check update password data
+ ********************************** */
+validate.checkPasswordData = async (req, res, next) => {
+  const { account_id } = req.body
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    const nav = await utilities.getNav()
+    return res.render("account/update-account", {
+      errors,
+      title: "Update Account",
+      nav,
+      accountData: { account_id },
+    })
+  }
+  next()
+}
+
 module.exports = validate

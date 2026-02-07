@@ -278,7 +278,7 @@ invCont.updateInventory = async function (req, res, next) {
  *  Build delete confirmation view
  * ************************** */
 invCont.buildDeleteConfirm = async function (req, res, next) {
-  const inv_id = parseInt(req.params.invId)
+  const inv_id = parseInt(req.params.inv_id)
   const nav = await utilities.getNav()
 
   // Get inventory item data

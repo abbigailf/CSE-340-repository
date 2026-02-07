@@ -4,69 +4,103 @@ const router = new express.Router()
 const invController = require("../controllers/invController")
 const utilities = require("../utilities/")
 const invValidate = require("../utilities/inventory-validation")
-const { body, validationResult } = require("express-validator")
 
-router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
-router.get("/detail/:invId", utilities.handleErrors(invController.buildDetailView));
-router.get("/trigger-error", utilities.handleErrors(invController.throwError));
+/* ***************************
+ * Public Inventory Routes
+ * *************************** */
+router.get(
+  "/type/:classificationId",
+  utilities.handleErrors(invController.buildByClassificationId)
+)
+
+router.get(
+  "/detail/:invId",
+  utilities.handleErrors(invController.buildDetailView)
+)
 
 /* ***************************
  * Inventory Management Routes
+ * (Employee / Admin only)
  * *************************** */
 
-// Management view (Task 1)
-router.get("/", utilities.handleErrors(invController.buildManagement))
+// Management view
+router.get(
+  "/",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
+  utilities.handleErrors(invController.buildManagement)
+)
 
-// Add classification (Task 2)
-router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification))
-router.post("/add-classification", utilities.handleErrors(invController.addClassification))
+// Add classification
+router.get(
+  "/add-classification",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
+  utilities.handleErrors(invController.buildAddClassification)
+)
 
-// Add inventory (Task 3)
-router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory))
+router.post(
+  "/add-classification",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
+  utilities.handleErrors(invController.addClassification)
+)
+
+// Add inventory
+router.get(
+  "/add-inventory",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
+  utilities.handleErrors(invController.buildAddInventory)
+)
 
 router.post(
   "/add-inventory",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
   invValidate.inventoryRules(),
   invValidate.checkInventoryData,
   utilities.handleErrors(invController.addInventory)
 )
 
-// Return inventory items as JSON (for inventory management view)
+// Inventory JSON (used by management view)
 router.get(
   "/getInventory/:classification_id",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
   utilities.handleErrors(invController.getInventoryJSON)
 )
 
-/* ***************************
- * Edit Inventory Item Route
- * ************************** */
+// Edit inventory
 router.get(
   "/edit/:invId",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
   utilities.handleErrors(invController.buildEditInventory)
 )
 
-/* ***************************
- * Update inventory item
- * *************************** */
+// Update inventory
 router.post(
   "/update",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
   utilities.handleErrors(invController.updateInventory)
 )
 
-/* ***************************
- * Deliver delete confirmation view
- * ************************** */
+// Delete confirmation
 router.get(
   "/delete/:inv_id",
-  utilities.handleErrors(invController.buildDeleteConfirmation)
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
+  utilities.handleErrors(invController.buildDeleteConfirm)
 )
 
-/* ***************************
- * Process inventory delete
- * ************************** */
+// Process delete
 router.post(
   "/delete",
+  utilities.checkJWTToken,
+  utilities.checkAdminEmployee,
   utilities.handleErrors(invController.deleteInventory)
 )
 
-module.exports = router;
+module.exports = router

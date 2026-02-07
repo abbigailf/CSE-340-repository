@@ -137,13 +137,68 @@ async function accountLogin(req, res) {
  * *************************************** */
 async function buildAccountManagement(req, res, next) {
   let nav = await utilities.getNav()
+  
+  // Get account info from JWT middleware
+  const { account_firstname, account_type, account_id } = res.locals.accountData
+
   res.render("account/account-management", {
     title: "Account Management",
     nav,
-    errors: null // in case we want to show errors later
+    firstName: account_firstname,
+    accountType: account_type,
+    accountId: account_id,
+    errors: null
   })
 }
 
+async function buildUpdateAccount(req, res, next) {
+  let nav = await utilities.getNav()
+  const accountId = req.params.accountId
+  const accountData = await accountModel.getAccountById(accountId)
+
+  if (!accountData) {
+    req.flash("notice", "Account not found.")
+    return res.redirect("/account/")
+  }
+
+  res.render("account/update-account", {
+    title: "Update Account",
+    nav,
+    accountData,
+    errors: null
+  })
+}
+
+async function updateAccount(req, res, next) {
+  const { account_id, account_firstname, account_lastname, account_email } = req.body
+  const result = await accountModel.updateAccount(account_id, account_firstname, account_lastname, account_email)
+
+  if (result) {
+    req.flash("notice", "Account successfully updated")
+    res.redirect("/account/")
+  } else {
+    req.flash("notice", "Update failed")
+    res.redirect(`/account/update/${account_id}`)
+  }
+}
+
+async function updatePassword(req, res, next) {
+    const { account_id, account_password } = req.body
+    try {
+        const hashedPassword = await bcrypt.hash(account_password, 10)
+        const result = await accountModel.updatePassword(account_id, hashedPassword)
+
+        if (result) {
+            req.flash("notice", "Password successfully updated")
+            res.redirect("/account/")
+        } else {
+            req.flash("notice", "Password update failed")
+            res.redirect(`/account/update/${account_id}`)
+        }
+    } catch (error) {
+        next(error)
+    }
+}
 
 // Export all controller functions
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, buildUpdateAccount, updateAccount, updatePassword }
